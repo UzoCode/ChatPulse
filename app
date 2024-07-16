@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
 from app import app, db
 
-@app.route('/api/auth/login', methods=['POST'])
+@app.route('/api/auth/login', methods=['POST', 'GET'])
 def login():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
