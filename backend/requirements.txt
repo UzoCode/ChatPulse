@@ -3,4 +3,5 @@ Flask-SQLAlchemy
 Flask-Migrate
 Flask-JWT-Extended
 Flask-SocketIO
-mysqlclientgunicorn
+mysqlclient
+gunicorn
