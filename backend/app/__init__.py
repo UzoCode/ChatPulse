@@ -5,7 +5,11 @@ from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
 from flask_cors import CORS
+import pymysql
 from config import Config
+
+# Install pymysql as MySQLdb
+pymysql.install_as_MySQLdb()
 
 db = SQLAlchemy()
 migrate = Migrate()
