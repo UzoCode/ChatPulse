@@ -4,6 +4,7 @@ import { Container, Typography, Box, Avatar } from '@mui/material';
 import LoginButton from './LoginButton';
 import RegisterButton from './RegisterButton';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import Navbar from './Navbar';
 
 const LandingPage = () => {
   const githubUrl = 'https://github.com/your-username'; // Update with your GitHub URL
@@ -29,29 +30,32 @@ const LandingPage = () => {
   document.body.style.overflow = 'hidden';
 
   return (
-    <Container maxWidth="sm" style={containerStyle}>
-      <Box position="absolute" top={16} right={16}>
-        <Avatar 
-          component="a" 
-          href={githubUrl} 
-          target="_blank"
-          style={{ backgroundColor: 'transparent' }}
-        >
-          <GitHubIcon style={{ color: 'black' }} /> {/* Set icon color to black */}
-        </Avatar>
-      </Box>
-      <Typography variant="h2" component="h1" gutterBottom className="animate__animated animate__fadeInDown">
-        Welcome to ChatPulse
-      </Typography>
-      <Box mt={4} className="animate__animated animate__fadeInUp">
-        <Box mt={2}>
-          <LoginButton />
+    <>
+      <Navbar /> {/* Ensure the Navbar component is being rendered */}
+      <Container maxWidth="sm" style={containerStyle}>
+        <Box position="absolute" top={16} right={16}>
+          <Avatar 
+            component="a" 
+            href={githubUrl} 
+            target="_blank"
+            style={{ backgroundColor: 'transparent' }}
+          >
+            <GitHubIcon style={{ color: 'black' }} /> {/* Set icon color to black */}
+          </Avatar>
         </Box>
-        <Box mt={2}>
-          <RegisterButton />
+        <Typography variant="h2" component="h1" gutterBottom className="animate__animated animate__fadeInDown">
+          Welcome to ChatPulse
+        </Typography>
+        <Box mt={4} className="animate__animated animate__fadeInUp">
+          <Box mt={2}>
+            <LoginButton />
+          </Box>
+          <Box mt={2}>
+            <RegisterButton />
+          </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+    </>
   );
 };
 
