@@ -4,16 +4,16 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import Conversation, Message, db
 from app import socketio
 
-bp = Blueprint('chat', __name__)  # Use a unique name for the blueprint
+chat_bp = Blueprint('chat', __name__)  # Use a unique name for the blueprint
 
-@bp.route('/conversations', methods=['GET'])
+@chat_bp.route('/conversations', methods=['GET'])
 @jwt_required()
 def get_conversations():
     user_id = get_jwt_identity()
     conversations = Conversation.query.filter_by(user_id=user_id).all()
     return jsonify([c.serialize() for c in conversations])
 
-@bp.route('/conversations', methods=['POST'])
+@chat_bp.route('/conversations', methods=['POST'])
 @jwt_required()
 def create_conversation():
     user_id = get_jwt_identity()
@@ -22,7 +22,7 @@ def create_conversation():
     db.session.commit()
     return jsonify(conversation.serialize())
 
-@bp.route('/messages', methods=['POST'])
+@chat_bp.route('/messages', methods=['POST'])
 @jwt_required()
 def send_message():
     user_id = get_jwt_identity()

@@ -27,16 +27,16 @@ def create_app(config_class=Config):
 
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-    from .auth import bp as auth_bp
+    from .auth import auth_bp
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
-    from .chat import bp as chat_bp
+    from .chat import chat_bp
     app.register_blueprint(chat_bp, url_prefix='/api/chat')
 
-    from .admin import bp as admin_bp
+    from .admin import admin_bp
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
 
-    from .settings import bp as settings_bp
+    from .settings import settings_bp
     app.register_blueprint(settings_bp, url_prefix='/api/settings')
 
     @app.route('/', defaults={'path': ''})
