@@ -1,10 +1,10 @@
+// src/components/LandingPage.js
 import 'animate.css/animate.min.css';
 import React from 'react';
 import { Container, Typography, Box, Avatar } from '@mui/material';
 import LoginButton from './LoginButton';
 import RegisterButton from './RegisterButton';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import Navbar from './Navbar';
 
 const LandingPage = () => {
   const githubUrl = 'https://github.com/your-username'; // Update with your GitHub URL
@@ -27,11 +27,10 @@ const LandingPage = () => {
   document.body.style.backgroundPosition = 'center';
   document.body.style.margin = '0';
   document.body.style.height = '100vh';
-  document.body.style.overflow = 'hidden';
+  document.body.style.overflow = 'auto';  // Allow scrolling
 
   return (
     <>
-      <Navbar /> {/* Ensure the Navbar component is being rendered */}
       <Container maxWidth="sm" style={containerStyle}>
         <Box position="absolute" top={16} right={16}>
           <Avatar 
