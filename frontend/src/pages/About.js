@@ -5,7 +5,7 @@ const About = () => {
   return (
     <div>
       <h1>About</h1>
-      <p>Learn more about us on this page.</p>
+      <p>ChatPulse is a chat application designed to provide smooth conversation between customer services representative and their customer</p>
     </div>
   );
 };
