@@ -39,6 +39,31 @@ def create_app(config_class=Config):
     from .settings import settings_bp
     app.register_blueprint(settings_bp, url_prefix='/api/settings')
 
+    @app.route('/')
+    def serve_index():
+        print("Serving index.html")
+        return send_from_directory('landing-page', 'index.html')
+
+    @app.route('/assets/<path:filename>')
+    def serve_assets(filename):
+        print(f"Serving asset file: {filename}")
+        return send_from_directory('landing-page/assets', filename)
+
+    @app.route('/css/<path:filename>')
+    def serve_css(filename):
+        print(f"Serving css file: {filename}")
+        return send_from_directory('landing-page/css', filename)
+
+    @app.route('/js/<path:filename>')
+    def serve_js(filename):
+        print(f"Serving js file: {filename}")
+        return send_from_directory('landing-page/js', filename)
+
+    @app.route('/images/<path:filename>')
+    def serve_images(filename):
+        print(f"Serving image file: {filename}")
+        return send_from_directory('landing-page/images', filename)
+
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve_react_app(path):
