@@ -39,31 +39,58 @@ def create_app(config_class=Config):
     from .settings import settings_bp
     app.register_blueprint(settings_bp, url_prefix='/api/settings')
 
+    
+    # Serve the downloaded landing page
     @app.route('/')
     def serve_index():
-        print("Serving index.html")
-        return send_from_directory('landing-page', 'index.html')
+        landing_page_path = os.path.abspath('landing-page')
+        index_path = os.path.join(landing_page_path, 'index.html')
+        print(f"Landing page path: {landing_page_path}")
+        print(f"Index path: {index_path}")
+        if os.path.exists(index_path):
+            return send_from_directory(landing_page_path, 'index.html')
+        else:
+            return abort(404, description="Landing page index.html not found")
 
     @app.route('/assets/<path:filename>')
     def serve_assets(filename):
-        print(f"Serving asset file: {filename}")
-        return send_from_directory('landing-page/assets', filename)
+        assets_path = os.path.join(os.path.abspath('landing-page'), 'assets')
+        if os.path.exists(os.path.join(assets_path, filename)):
+            print(f"Serving asset file: {filename}")  # Debugging statement
+            return send_from_directory(assets_path, filename)
+        else:
+            print(f"Asset file not found: {filename}")  # Debugging statement
+            return abort(404, description="Asset file not found")
 
     @app.route('/css/<path:filename>')
     def serve_css(filename):
-        print(f"Serving css file: {filename}")
-        return send_from_directory('landing-page/css', filename)
+        css_path = os.path.join(os.path.abspath('landing-page'), 'css')
+        if os.path.exists(os.path.join(css_path, filename)):
+            print(f"Serving css file: {filename}")  # Debugging statement
+            return send_from_directory(css_path, filename)
+        else:
+            print(f"CSS file not found: {filename}")  # Debugging statement
+            return abort(404, description="CSS file not found")
 
     @app.route('/js/<path:filename>')
     def serve_js(filename):
-        print(f"Serving js file: {filename}")
-        return send_from_directory('landing-page/js', filename)
+        js_path = os.path.join(os.path.abspath('landing-page'), 'js')
+        if os.path.exists(os.path.join(js_path, filename)):
+            print(f"Serving js file: {filename}")  # Debugging statement
+            return send_from_directory(js_path, filename)
+        else:
+            print(f"JS file not found: {filename}")  # Debugging statement
+            return abort(404, description="JS file not found")
 
     @app.route('/images/<path:filename>')
     def serve_images(filename):
-        print(f"Serving image file: {filename}")
-        return send_from_directory('landing-page/images', filename)
-
+        images_path = os.path.join(os.path.abspath('landing-page'), 'images')
+        if os.path.exists(os.path.join(images_path, filename)):
+            print(f"Serving image file: {filename}")  # Debugging statement
+            return send_from_directory(images_path, filename)
+        else:
+            print(f"Image file not found: {filename}")  # Debugging statement
+            return abort(404, description="Image file not found")
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve_react_app(path):
