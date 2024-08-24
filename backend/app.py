@@ -5,10 +5,12 @@ from flask_jwt_extended import JWTManager, create_access_token
 from flask_socketio import SocketIO, emit
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+# from app.routes import routes_bp
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://username:password@localhost/chatpulse'
 app.config['SECRET_KEY'] = 'your_secret_key'
+# app.register_blueprint(routes_bp)
 api = Api(app)
 db = SQLAlchemy(app)
 jwt = JWTManager(app)

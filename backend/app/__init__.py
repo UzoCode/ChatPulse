@@ -17,7 +17,7 @@ jwt = JWTManager()
 socketio = SocketIO()
 
 def create_app(config_class=Config):
-    app = Flask(__name__, static_folder=os.path.abspath("../frontend/build"), static_url_path="/")
+    app = Flask(__name__, static_folder=os.path.abspath("frontend/build"), static_url_path="/backend")
     app.config.from_object(config_class)
 
     db.init_app(app)
