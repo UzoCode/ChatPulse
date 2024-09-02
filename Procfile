@@ -1,1 +1,1 @@
-web: gunicorn CHATPULSE.app:app
+web: gunicorn chatpulse.app:app
