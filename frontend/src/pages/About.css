@@ -1,0 +1,62 @@
+/* src/pages/About.css */
+.about-container {
+  padding: 20px;
+  background-image: url('./about_backgrounds.jpg');
+  background-size: cover;
+  background-position: center;
+  color: #333;
+  min-height: 100vh;
+  position: relative;
+}
+
+.justified-text {
+  text-align: justify;
+}
+
+.social-links {
+  list-style-type: none;
+  padding: 0;
+}
+
+.social-links li {
+  margin: 10px 0;
+}
+
+.social-links li a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #0073b1;
+}
+
+.social-links li a:hover {
+  color: #005582;
+}
+
+.social-links li a svg {
+  margin-right: 8px;
+}
+
+.image-container {
+  margin-top: 20px;
+}
+
+.about-image {
+  width: 100%;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.about-image.full-screen {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+}
+
+.about-container.full-screen .image-container {
+  display: none;
+}

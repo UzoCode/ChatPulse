@@ -86,7 +86,7 @@
 #     return app
 
 import os
-from flask import Flask, jsonify, send_from_directory, abort
+from flask import Flask, send_from_directory, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -130,20 +130,23 @@ def create_app(config_class=Config):
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve_react_app(path):
+        # Check if the requested path exists in the static folder
         if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
             return send_from_directory(app.static_folder, path)
         else:
+            # Serve index.html for all other routes
             return send_from_directory(app.static_folder, 'index.html')
 
     # Serve static assets (JS, CSS, images) from the React build
     @app.route('/static/<path:filename>')
     def serve_static_files(filename):
+        # Serve files from the 'static' folder in the build
         return send_from_directory(os.path.join(app.static_folder, 'static'), filename)
 
-    # Serve background images and other assets from the public directory
+    # Serve other public assets from the public directory
     @app.route('/<path:filename>')
     def serve_public_files(filename):
-        public_path = os.path.join(os.path.abspath('frontend/public'))
+        public_path = os.path.join('frontend/public')
         if os.path.exists(os.path.join(public_path, filename)):
             return send_from_directory(public_path, filename)
         else:
