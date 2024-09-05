@@ -4,7 +4,8 @@
   background-image: url('./about_backgrounds.jpg');
   background-size: cover;
   background-position: center;
-  color: #333;
+  color: white; 
+  /* color: #333; */
   min-height: 100vh;
   position: relative;
 }

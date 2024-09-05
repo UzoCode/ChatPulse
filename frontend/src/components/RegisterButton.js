@@ -11,8 +11,8 @@ const RegisterButton = () => {
 
   return (
     <Button 
-      variant="outlined" 
-      color="secondary" 
+      variant="contained" 
+      color="primary" 
       fullWidth 
       style={{ marginTop: '1em' }}
       className="animate__animated animate__pulse"

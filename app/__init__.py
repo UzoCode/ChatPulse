@@ -104,7 +104,7 @@ jwt = JWTManager()
 socketio = SocketIO()
 
 def create_app(config_class=Config):
-    app = Flask(__name__, static_folder=os.path.abspath("frontend/build"), static_url_path="")
+    app = Flask(__name__, static_folder=os.path.abspath("frontend/build"), static_url_path="/")
     app.config.from_object(config_class)
 
     db.init_app(app)
@@ -151,5 +151,14 @@ def create_app(config_class=Config):
             return send_from_directory(public_path, filename)
         else:
             return abort(404, description="File not found")
+
+    # Catch-all route to handle any unrecognized routes by sending index.html
+    @app.route('/<path:path>')
+    def catch_all(path):
+        # Check if the file exists in the static folder first
+        if os.path.exists(os.path.join(app.static_folder, path)):
+            return send_from_directory(app.static_folder, path)
+        # Otherwise, serve the React app
+        return app.send_static_file('index.html')
 
     return app
