@@ -35,7 +35,7 @@ class Message(db.Model):
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 # API Endpoints
-@app.route('/api/auth/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
@@ -44,7 +44,7 @@ def login():
         return jsonify(access_token=access_token)
     return jsonify(message='Invalid credentials'), 401
 
-@app.route('/api/auth/register', methods=['POST'])
+@app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
     hashed_password = generate_password_hash(data['password'], method='sha256')

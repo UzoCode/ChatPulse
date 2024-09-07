@@ -1,11 +1,17 @@
-// // src/components/LandingPage.js
 import 'animate.css/animate.min.css';
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Typography, Box, Button, Grid, Card, CardMedia, CardContent } from '@mui/material';
-import LoginButton from './LoginButton';
-import RegisterButton from './RegisterButton';
+import LoginForm from './LoginForm';  // Import the LoginForm component
+import RegisterForm from './RegisterForm';  // Import the RegisterForm component
 
 const LandingPage = () => {
+  const [showLogin, setShowLogin] = useState(true);
+
+  // Toggle between login and register forms
+  const toggleForm = () => {
+    setShowLogin(!showLogin);
+  };
+
   const containerStyle = {
     textAlign: 'center',
     marginTop: '2em',
@@ -37,10 +43,24 @@ const LandingPage = () => {
           Real-time User Support and Engagement
         </Typography>
         <Box mt={4} className="animate__animated animate__fadeInUp">
-          <Box display="flex" justifyContent="center" gap={2}>
-            <LoginButton />
-            <RegisterButton />
-          </Box>
+          {/* Login/Register Toggle Form */}
+          {showLogin ? (
+            <>
+              <LoginForm />
+              <Box mt={2}>
+                <Typography variant="body1">Don't have an account?</Typography>
+                <Button onClick={toggleForm}>Register</Button>
+              </Box>
+            </>
+          ) : (
+            <>
+              <RegisterForm />
+              <Box mt={2}>
+                <Typography variant="body1">Already have an account?</Typography>
+                <Button onClick={toggleForm}>Login</Button>
+              </Box>
+            </>
+          )}
           <Box mt={2}>
             <Button
               variant="contained"

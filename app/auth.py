@@ -1,42 +1,33 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token
-from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User
 from app import db
+from app.models import User
+from flask_jwt_extended import create_access_token
 
+# Create a blueprint for auth
 auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-
-    if not data or not 'username' in data or not 'password' in data:
-        return jsonify(message='Username and password required'), 400
-
-    user = User.query.filter_by(username=data['username']).first()
-    if user and check_password_hash(user.password, data['password']):
-        access_token = create_access_token(identity=user.id)
-        return jsonify(access_token=access_token)
-
-    return jsonify(message='Invalid credentials'), 401
-
-@auth_bp.route('/register', methods=['POST'])
+@auth_bp.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
 
-    if not data or not 'username' in data or not 'password' in data or not 'email' in data:
-        return jsonify(message='Username, email, and password required'), 400
+    # Check if email or username already exists
+    existing_user = User.query.filter((User.email == data['email']) | (User.username == data['username'])).first()
+    if existing_user:
+        return jsonify(message="User with that email or username already exists"), 409  # Conflict status code
 
-    if User.query.filter_by(username=data['username']).first():
-        return jsonify(message='Username already exists'), 400
-
-    if User.query.filter_by(email=data['email']).first():
-        return jsonify(message='Email already exists'), 400
-
-    hashed_password = generate_password_hash(data['password'], method='sha256')
-    new_user = User(username=data['username'], password=hashed_password, email=data['email'])
+    # Register the new user
+    new_user = User(email=data['email'], username=data['username'], password=data['password'])
+    new_user.set_password(data['password'])
     db.session.add(new_user)
     db.session.commit()
 
-    access_token = create_access_token(identity=new_user.id)
-    return jsonify(access_token=access_token)
+    return jsonify(message="User registered successfully"), 201
+
+@auth_bp.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    user = User.query.filter((User.email == data['emailOrUsername']) | (User.username == data['emailOrUsername'])).first()
+    if user and user.check_password(data['password']):
+        access_token = create_access_token(identity=user.username)
+        return jsonify(token=access_token, username=user.username), 200
+    return jsonify(message="Login failed"), 401

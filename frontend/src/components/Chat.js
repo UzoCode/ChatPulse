@@ -1,70 +1,71 @@
-import React, { useState, useEffect } from 'react';
-import socketService from '../services/socketService';
-import authService from '../services/authService';
-import axios from 'axios';
+// src/components/Chat.js
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
 
 const Chat = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // Replace with actual authentication check logic
+  const [username, setUsername] = useState('');
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [conversationId, setConversationId] = useState(null);
+  const [message, setMessage] = useState('');
+  const [socket, setSocket] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      axios.get('/api/chat/conversations', {
-        headers: {
-          Authorization: `Bearer ${user.access_token}`
-        }
-      }).then(response => {
-        if (response.data.length > 0) {
-          const conversation = response.data[0];
-          setConversationId(conversation.id);
-          socketService.joinRoom(conversation.id);
-          setMessages(conversation.messages);
-        }
-      });
+    // Check authentication status
+    if (!isAuthenticated) {
+      navigate('/login');
     }
-  }, []);
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
-    socketService.onMessage((message) => {
+    // Retrieve username from localStorage after login/registration
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+
+    // Establish the socket connection for real-time chat
+    const newSocket = io('http://localhost:5000');
+    setSocket(newSocket);
+
+    // Listen for incoming messages
+    newSocket.on('message', (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
+
+    // Cleanup: Disconnect socket on component unmount
+    return () => {
+      newSocket.disconnect();
+    };
   }, []);
 
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && conversationId) {
-      axios.post('/api/chat/messages', {
-        conversation_id: conversationId,
-        body: newMessage,
-      }, {
-        headers: {
-          Authorization: `Bearer ${user.access_token}`
-        }
-      }).then(response => {
-        setNewMessage('');
-        socketService.sendMessage(conversationId, response.data);
-      });
+  const sendMessage = () => {
+    if (socket) {
+      socket.emit('message', message);
+      setMessage(''); // Clear input after sending
     }
   };
 
   return (
     <div>
-      <ul>
-        {messages.map((msg, index) => (
-          <li key={index}>{msg.body}</li>
-        ))}
-      </ul>
-      <form onSubmit={handleSendMessage}>
+      {/* Welcome message */}
+      {username && <h2>Welcome, {username}! You are now in the chat space.</h2>}
+
+      {/* Real-time chat interface */}
+      <div>
+        <ul>
+          {messages.map((msg, index) => (
+            <li key={index}>{msg}</li>
+          ))}
+        </ul>
         <input
           type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
         />
-        <button type="submit">Send</button>
-      </form>
+        <button onClick={sendMessage}>Send</button>
+      </div>
     </div>
   );
 };
