@@ -1,14 +1,21 @@
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
-class User(db.Model):
+class Conversation(db.Model):
+    __tablename__ = 'conversations'
+
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User', backref='conversations')
+    # Add other fields as needed
 
-    def __init__(self, username, password):
-        self.username = username
-        self.password_hash = generate_password_hash(password)
+class Message(db.Model):
+    __tablename__ = 'messages'
 
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+    id = db.Column(db.Integer, primary_key=True)
+    conversation_id = db.Column(db.Integer, db.ForeignKey('conversations.id'))
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    body = db.Column(db.Text, nullable=False)  # Ensure the message body is always provided
+
+    sender = db.relationship('User')
+    conversation = db.relationship('Conversation', backref='messages')

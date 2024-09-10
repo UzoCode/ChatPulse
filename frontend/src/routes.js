@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Dashboard from './pages/Dashboard';
-import Chat from './pages/Chat'; // Import Chat component
+import Chat from './components/Chat'; // Import Chat component
 
 const Routes = () => {
   return (

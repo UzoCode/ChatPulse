@@ -1,8 +1,8 @@
 import 'animate.css/animate.min.css';
 import React, { useState } from 'react';
 import { Container, Typography, Box, Button, Grid, Card, CardMedia, CardContent } from '@mui/material';
-import LoginForm from './LoginForm';  // Import the LoginForm component
-import RegisterForm from './RegisterForm';  // Import the RegisterForm component
+import LoginForm from '../pages/Login';  // Import the LoginForm component
+import RegisterForm from '../pages/Register';  // Import the RegisterForm component
 
 const LandingPage = () => {
   const [showLogin, setShowLogin] = useState(true);
