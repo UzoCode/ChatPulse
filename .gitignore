@@ -41,3 +41,8 @@ Thumbs.db
 # Large files
 *.pack
 *.log
+
+# Add these lines if they're not already present
+*.env
+*.pyc
+__pycache__/
