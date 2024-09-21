@@ -9,8 +9,8 @@ class Message(db.Model):
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    room_id = db.Column(db.Integer, db.ForeignKey('chat_rooms.id'), nullable=False)
+    conversation_id = db.Column(db.Integer, db.ForeignKey('conversations.id'), nullable=False)
     attachment_url = db.Column(db.String(255))
 
     user = db.relationship('User', backref='messages')
-    chat_room = db.relationship('ChatRoom', backref='messages')
+    conversation = db.relationship('Conversation', back_populates='messages')

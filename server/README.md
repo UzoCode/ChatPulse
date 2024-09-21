@@ -34,7 +34,7 @@ These instructions will get you a copy of the project up and running on your loc
 4. Set up your environment variables:
    Copy the `.env.example` file to `.env` and fill in your specific details:
    ```
-   cp .env.example .env
+   cp .env.example .en
    ```
    Then edit the `.env` file with your specific configuration.
 

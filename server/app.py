@@ -7,6 +7,7 @@ from server.extensions import db, migrate, jwt, cache, limiter, api
 from server.routes import auth, chat
 # from server.routes import admin, settings  # Uncomment these when implemented
 from server.routes.chat import chat_bp
+from server.routes.auth import auth_bp
 from flask_limiter.util import get_remote_address
 from flask_socketio import SocketIO
 import traceback
@@ -38,7 +39,7 @@ def create_app(config_class=Config):
         # ... rest of your app setup ...
     
     # Register blueprints
-    app.register_blueprint(auth.auth_bp, url_prefix='/api/auth')
+    app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(chat.chat_bp, url_prefix='/api/chat')
     # app.register_blueprint(admin.admin_bp, url_prefix='/api/admin')  # Uncomment when implemented
     # app.register_blueprint(settings.settings_bp, url_prefix='/api/settings')  # Uncomment when implemented

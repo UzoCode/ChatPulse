@@ -12,3 +12,4 @@ gunicorn==22.0.0
 eventlet==0.33.3
 celery==5.3.6
 redis==5.0.1
+firebase-admin==6.2.0
