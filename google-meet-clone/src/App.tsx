@@ -1,20 +1,32 @@
 import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import LandingPage from './components/LandingPage';
 import VideoGrid from './components/VideoGrid';
 import ControlBar from './components/ControlBar';
+import AdminControls from './components/AdminControls';
 
-const App: React.FC = () => {
+function App() {
+  // This should be determined by your authentication system
+  const isAdmin = false;
+
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
-      <header className="bg-white shadow-md p-4">
-        <h1 className="text-2xl font-bold text-gray-800">Google Meet Clone</h1>
-      </header>
-      <main className="flex-grow">
-        <VideoGrid />
-      </main>
-      <footer>
-        <ControlBar />
-      </footer>
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<LandingPage />} />
+          <Route path="/meeting" element={
+            <div className="flex flex-col h-screen">
+              <div className="flex-grow overflow-hidden">
+                <VideoGrid />
+              </div>
+              {isAdmin && <AdminControls />}
+              <ControlBar />
+            </div>
+          } />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
