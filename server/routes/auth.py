@@ -1,10 +1,13 @@
 from flask import Blueprint, request, jsonify
+from flask_cors import cross_origin
 from firebase_admin import auth
 from flask_jwt_extended import create_access_token
+from server.extensions import limiter
 
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/register', methods=['POST'])
+@limiter.limit("5 per minute")
 def register():
     data = request.get_json()
     email = data.get('email')
@@ -20,6 +23,7 @@ def register():
         return jsonify({"error": str(e)}), 400
 
 @auth_bp.route('/login', methods=['POST'])
+@limiter.limit("10 per minute")
 def login():
     data = request.get_json()
     email = data.get('email')
@@ -35,4 +39,28 @@ def login():
     except Exception as e:
         return jsonify({"error": str(e)}), 401
 
-# Your route handlers here
+@auth_bp.route('/exchange_token', methods=['POST'])
+@limiter.limit("10 per minute")
+def exchange_token():
+    # if request.method == 'OPTIONS':
+    #     return jsonify({}), 200
+    
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return jsonify({"error": "Invalid Authorization header"}), 401
+
+    id_token = auth_header.split('Bearer ')[1]
+    try:
+        decoded_token = auth.verify_id_token(id_token)
+        uid = decoded_token['uid']
+        # Here you can fetch user data from your database if needed
+        access_token = create_access_token(identity=uid)
+        return jsonify(access_token=access_token), 200
+    except auth.InvalidIdTokenError:
+        return jsonify({"error": "Invalid ID token"}), 401
+    except auth.ExpiredIdTokenError:
+        return jsonify({"error": "Expired ID token"}), 401
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Add more auth-related routes as needed

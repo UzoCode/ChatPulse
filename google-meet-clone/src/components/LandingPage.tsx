@@ -1,85 +1,106 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { registerUser, loginUser, signInWithGoogle } from '../services/auth';
+import { exchangeToken } from '../services/api';
 
 const LandingPage: React.FC = () => {
   const [email, setEmail] = useState('');
-  const [meetingCode, setMeetingCode] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLogin, setIsLogin] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleSignIn = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    navigate('/meeting');
+    setError(null);
+    try {
+      if (isLogin) {
+        await loginUser(email, password);
+      } else {
+        await registerUser(email, password);
+      }
+      // After successful Firebase authentication, exchange the token with your Flask server
+      const accessToken = await exchangeToken();
+      // Store the access token securely (e.g., in localStorage or a secure cookie)
+      localStorage.setItem('accessToken', accessToken);
+      navigate('/meeting');
+    } catch (error) {
+      console.error('Authentication error:', error);
+      setError('Authentication failed. Please check your credentials and try again.');
+    }
   };
 
-  const handleJoinMeeting = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    navigate(`/meeting/${meetingCode}`);
+  const handleGoogleSignIn = async () => {
+    try {
+      const user = await signInWithGoogle();
+      console.log("Successfully signed in with Google:", user);
+      // After successful Google Sign-In, exchange the token with your Flask server
+      const accessToken = await exchangeToken();
+      console.log("Received access token:", accessToken);
+      // Store the access token securely (e.g., in localStorage or a secure cookie)
+      localStorage.setItem('accessToken', accessToken);
+      // Force navigation to the meeting page
+      window.location.href = '/meeting';
+    } catch (error) {
+      console.error('Google Sign-In error:', error);
+      setError('Google Sign-In failed. Please try again.');
+    }
+  };
+
+  const handleToggleMode = () => {
+    setIsLogin(!isLogin);
+    setError(null);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-blue-600">VideoMeet Pro</h1>
-          <p className="text-gray-600">Professional video conferencing for teams</p>
-        </div>
-        <form className="space-y-4" onSubmit={handleSignIn}>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email or phone
-            </label>
-            <input
-              type="text"
-              id="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-              placeholder="Enter your email or phone"
-            />
-          </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-custom">
+        <h1 className="text-3xl font-bold text-primary mb-6 text-center">
+          {isLogin ? 'Sign In' : 'Register'}
+        </h1>
+        {error && <p className="text-error mb-4 text-center">{error}</p>}
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-2 border border-secondary rounded"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 border border-secondary rounded"
+            required
+          />
           <button
             type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="w-full py-2 px-4 bg-primary text-white rounded hover:bg-primary-dark"
           >
-            Sign In
+            {isLogin ? 'Sign In' : 'Register'}
           </button>
         </form>
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">Or</span>
-          </div>
-        </div>
-        <form className="space-y-4" onSubmit={handleJoinMeeting}>
-          <div>
-            <label htmlFor="meetingCode" className="block text-sm font-medium text-gray-700">
-              Meeting Code
-            </label>
-            <input
-              type="text"
-              id="meetingCode"
-              name="meetingCode"
-              value={meetingCode}
-              onChange={(e) => setMeetingCode(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-              placeholder="Enter meeting code"
-            />
-          </div>
+        <div className="mt-4">
           <button
-            type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            onClick={handleGoogleSignIn}
+            className="w-full py-2 px-4 bg-red-500 text-white rounded hover:bg-red-600 flex items-center justify-center"
           >
-            Join Meeting
+            <img src="/google-icon.png" alt="Google" className="w-5 h-5 mr-2" />
+            Sign in with Google
           </button>
-        </form>
-        <div className="text-center">
-          <Link to="/create-account" className="text-sm text-blue-600 hover:text-blue-800">
-            Create account
-          </Link>
         </div>
+        <p className="mt-4 text-center">
+          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <button
+            onClick={handleToggleMode}
+            className="text-primary hover:underline"
+          >
+            {isLogin ? 'Register' : 'Sign In'}
+          </button>
+        </p>
       </div>
     </div>
   );
