@@ -19,11 +19,7 @@ const LandingPage: React.FC = () => {
       } else {
         await registerUser(email, password);
       }
-      // After successful Firebase authentication, exchange the token with your Flask server
-      const accessToken = await exchangeToken();
-      // Store the access token securely (e.g., in localStorage or a secure cookie)
-      localStorage.setItem('accessToken', accessToken);
-      navigate('/meeting');
+      await handleSuccessfulAuth();
     } catch (error) {
       console.error('Authentication error:', error);
       setError('Authentication failed. Please check your credentials and try again.');
@@ -32,18 +28,22 @@ const LandingPage: React.FC = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      const user = await signInWithGoogle();
-      console.log("Successfully signed in with Google:", user);
-      // After successful Google Sign-In, exchange the token with your Flask server
-      const accessToken = await exchangeToken();
-      console.log("Received access token:", accessToken);
-      // Store the access token securely (e.g., in localStorage or a secure cookie)
-      localStorage.setItem('accessToken', accessToken);
-      // Force navigation to the meeting page
-      window.location.href = '/meeting';
+      await signInWithGoogle();
+      await handleSuccessfulAuth();
     } catch (error) {
       console.error('Google Sign-In error:', error);
       setError('Google Sign-In failed. Please try again.');
+    }
+  };
+
+  const handleSuccessfulAuth = async () => {
+    try {
+      const message = await exchangeToken();
+      console.log(message); // Log the message from the server
+      navigate('/video-grid'); // Redirect to the video grid page
+    } catch (error) {
+      console.error('Token exchange error:', error);
+      setError('Failed to authenticate with the server. Please try again.');
     }
   };
 

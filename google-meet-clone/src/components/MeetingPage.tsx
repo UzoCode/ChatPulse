@@ -1,11 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
+import MeetingControls from './MeetingControls';
+import VideoGrid from './VideoGrid';
+import ChatBox from './ChatBox';
+import ParticipantList from './ParticipantList';
 
 const MeetingPage: React.FC = () => {
+  const [participants, setParticipants] = useState([
+    { id: 'local', stream: new MediaStream() },
+    { id: 'remote1', stream: new MediaStream() },
+  ]);
+
+  const handleEndCall = () => {
+    // Add logic to handle ending the call
+    console.log('Call ended');
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-      <h1 className="text-3xl font-bold text-primary mb-6">Meeting Page</h1>
-      <p>This is where the video meeting will take place.</p>
-      {/* Add more components for video, chat, etc. here */}
+    <div className="min-h-screen flex flex-col bg-gray-900 text-white">
+      <div className="flex-grow flex">
+        <div className="flex-grow p-4">
+          <VideoGrid participants={participants} />
+        </div>
+        <div className="w-64 flex flex-col">
+          <ParticipantList participants={participants.map(p => ({ id: p.id, name: `User ${p.id}` }))} />
+          <ChatBox />
+        </div>
+      </div>
+      <div className="p-4">
+        <MeetingControls onEndCall={handleEndCall} />
+      </div>
     </div>
   );
 };

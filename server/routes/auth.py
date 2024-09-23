@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from flask_cors import cross_origin
 from firebase_admin import auth
 from flask_jwt_extended import create_access_token
@@ -42,9 +42,6 @@ def login():
 @auth_bp.route('/exchange_token', methods=['POST'])
 @limiter.limit("10 per minute")
 def exchange_token():
-    # if request.method == 'OPTIONS':
-    #     return jsonify({}), 200
-    
     auth_header = request.headers.get('Authorization')
     if not auth_header or not auth_header.startswith('Bearer '):
         return jsonify({"error": "Invalid Authorization header"}), 401
@@ -53,9 +50,11 @@ def exchange_token():
     try:
         decoded_token = auth.verify_id_token(id_token)
         uid = decoded_token['uid']
-        # Here you can fetch user data from your database if needed
         access_token = create_access_token(identity=uid)
-        return jsonify(access_token=access_token), 200
+        
+        response = make_response(jsonify({"message": "Token exchanged successfully"}), 200)
+        response.set_cookie('access_token', access_token, httponly=True, secure=True, samesite='Strict')
+        return response
     except auth.InvalidIdTokenError:
         return jsonify({"error": "Invalid ID token"}), 401
     except auth.ExpiredIdTokenError:

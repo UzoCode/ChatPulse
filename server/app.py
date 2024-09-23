@@ -16,7 +16,10 @@ socketio = SocketIO()
 
 def create_app(config_class=Config):
     app = Flask(__name__, static_folder=os.path.abspath("../client/build"), static_url_path="/")
-    CORS(app)  # This enables CORS for all routes
+    
+    # Configure CORS
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000", "supports_credentials": True}})
+    
     app.config.from_object(config_class)
 
     # Initialize extensions with the app
@@ -26,7 +29,7 @@ def create_app(config_class=Config):
     cache.init_app(app)
     limiter.init_app(app)
     api.init_app(app)
-    socketio.init_app(app, cors_allowed_origins="*")  # Initialize socketio with the app
+    socketio.init_app(app, cors_allowed_origins="http://localhost:3000")
 
     with app.app_context():
         # Import all models here
