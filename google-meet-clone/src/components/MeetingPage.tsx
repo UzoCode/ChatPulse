@@ -10,6 +10,11 @@ const MeetingPage: React.FC = () => {
     { id: 'remote1', stream: new MediaStream() },
   ]);
 
+  // Add this function to use setParticipants
+  const addParticipant = (id: string, stream: MediaStream) => {
+    setParticipants(prev => [...prev, { id, stream }]);
+  };
+
   const handleEndCall = () => {
     // Add logic to handle ending the call
     console.log('Call ended');

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser, loginUser, signInWithGoogle } from '../services/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth } from '../firebase';
 import { exchangeToken } from '../services/api';
 
 const LandingPage: React.FC = () => {
@@ -14,11 +15,14 @@ const LandingPage: React.FC = () => {
     e.preventDefault();
     setError(null);
     try {
+      let userCredential;
       if (isLogin) {
-        await loginUser(email, password);
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
       } else {
-        await registerUser(email, password);
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
       }
+      const idToken = await userCredential.user.getIdToken();
+      localStorage.setItem('id_token', idToken);
       await handleSuccessfulAuth();
     } catch (error) {
       console.error('Authentication error:', error);
@@ -28,7 +32,10 @@ const LandingPage: React.FC = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle();
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(auth, provider);
+      const idToken = await userCredential.user.getIdToken();
+      localStorage.setItem('id_token', idToken);
       await handleSuccessfulAuth();
     } catch (error) {
       console.error('Google Sign-In error:', error);
@@ -40,7 +47,7 @@ const LandingPage: React.FC = () => {
     try {
       const message = await exchangeToken();
       console.log(message); // Log the message from the server
-      navigate('/video-grid'); // Redirect to the video grid page
+      navigate('/meeting'); // Redirect to the meeting page
     } catch (error) {
       console.error('Token exchange error:', error);
       setError('Failed to authenticate with the server. Please try again.');

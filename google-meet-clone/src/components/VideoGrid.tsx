@@ -1,18 +1,23 @@
 import React from 'react';
-import VideoTile from './VideoTile';
+// Remove the VideoTile import if it's not being used
+// import VideoTile from './VideoTile';
+
+interface Participant {
+  id: string;
+  stream: MediaStream;
+}
 
 interface VideoGridProps {
-  participants: { id: string; stream: MediaStream }[];
+  participants: Participant[];
 }
 
 const VideoGrid: React.FC<VideoGridProps> = ({ participants }) => {
-  const gridClass = participants.length <= 2 ? 'grid-cols-1' :
-                    participants.length <= 4 ? 'grid-cols-2' : 'grid-cols-3';
-
   return (
-    <div className={`grid ${gridClass} gap-4`}>
-      {participants.map(participant => (
-        <video key={participant.id} autoPlay playsInline muted={participant.id === 'local'} />
+    <div className="grid grid-cols-2 gap-4">
+      {participants.map((participant) => (
+        <div key={participant.id} className="aspect-video bg-gray-800 rounded-lg overflow-hidden">
+          {/* Implement video rendering logic here */}
+        </div>
       ))}
     </div>
   );
